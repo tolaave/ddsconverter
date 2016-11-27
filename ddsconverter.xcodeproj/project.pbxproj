@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		D5BA58B01DEB62110038082F /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D5BA58AF1DEB62110038082F /* main.cpp */; };
+		D5E6C3DF1DEB67AE0024B86B /* DDSCompressor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D5E6C3DD1DEB67AE0024B86B /* DDSCompressor.cpp */; };
+		D5E6C3E21DEB68230024B86B /* DDSDecompressor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D5E6C3E01DEB68230024B86B /* DDSDecompressor.cpp */; };
+		D5E6C3E51DEB6FD50024B86B /* Bitmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D5E6C3E31DEB6FD50024B86B /* Bitmap.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +28,13 @@
 /* Begin PBXFileReference section */
 		D5BA58AC1DEB62110038082F /* ddsconverter */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ddsconverter; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5BA58AF1DEB62110038082F /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		D5E6C3DC1DEB65110024B86B /* DDSFormat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDSFormat.h; sourceTree = "<group>"; };
+		D5E6C3DD1DEB67AE0024B86B /* DDSCompressor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DDSCompressor.cpp; sourceTree = "<group>"; };
+		D5E6C3DE1DEB67AE0024B86B /* DDSCompressor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DDSCompressor.hpp; sourceTree = "<group>"; };
+		D5E6C3E01DEB68230024B86B /* DDSDecompressor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DDSDecompressor.cpp; sourceTree = "<group>"; };
+		D5E6C3E11DEB68230024B86B /* DDSDecompressor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DDSDecompressor.hpp; sourceTree = "<group>"; };
+		D5E6C3E31DEB6FD50024B86B /* Bitmap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Bitmap.cpp; sourceTree = "<group>"; };
+		D5E6C3E41DEB6FD50024B86B /* Bitmap.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Bitmap.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,7 +67,14 @@
 		D5BA58AE1DEB62110038082F /* ddsconverter */ = {
 			isa = PBXGroup;
 			children = (
+				D5E6C3DC1DEB65110024B86B /* DDSFormat.h */,
 				D5BA58AF1DEB62110038082F /* main.cpp */,
+				D5E6C3DD1DEB67AE0024B86B /* DDSCompressor.cpp */,
+				D5E6C3DE1DEB67AE0024B86B /* DDSCompressor.hpp */,
+				D5E6C3E01DEB68230024B86B /* DDSDecompressor.cpp */,
+				D5E6C3E11DEB68230024B86B /* DDSDecompressor.hpp */,
+				D5E6C3E31DEB6FD50024B86B /* Bitmap.cpp */,
+				D5E6C3E41DEB6FD50024B86B /* Bitmap.hpp */,
 			);
 			path = ddsconverter;
 			sourceTree = "<group>";
@@ -118,6 +135,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D5E6C3E51DEB6FD50024B86B /* Bitmap.cpp in Sources */,
+				D5E6C3E21DEB68230024B86B /* DDSDecompressor.cpp in Sources */,
+				D5E6C3DF1DEB67AE0024B86B /* DDSCompressor.cpp in Sources */,
 				D5BA58B01DEB62110038082F /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -237,6 +257,7 @@
 				D5BA58B51DEB62110038082F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
