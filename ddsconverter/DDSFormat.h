@@ -45,4 +45,11 @@
         uint32_t            dwReserved2;
     } DDSHeader;
 
+    typedef struct __attribute__((packed))
+    {
+        uint16_t            wColor0;
+        uint16_t            wColor1;
+        uint32_t            dwData;
+    } DDSBlockData;
+    
 #endif /* DDSFormat_h */

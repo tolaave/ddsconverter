@@ -16,22 +16,22 @@ Bitmap::Bitmap (int width, int height) :
     m_width(width),
     m_height(height)
 {
-    m_data = new ARGBPixel[width * height];
+    m_data = new Color32[width * height];
 }
 
-void Bitmap::setPixel(int x, int y, ARGBPixel value)
+void Bitmap::setPixel(int x, int y, Color32 value)
 {
     if (x >= 0 && y >= 0 && x < m_width && y < m_height)
     {
-        m_data[y * m_height + m_width] = value;
+        m_data[y * m_height + x] = value;
     }
 }
 
-ARGBPixel Bitmap::getPixel (int x, int y)
+Color32 Bitmap::getPixel (int x, int y)
 {
     if (x >= 0 && y >= 0 && x < m_width && y < m_height)
     {
-        return m_data[y * m_height + m_width];
+        return m_data[y * m_height + x];
     }
     return 0;
 }
@@ -97,7 +97,7 @@ Bitmap* Bitmap::load (const char* filename)
                     int b = rowBuffer[x * 3];
                     int g = rowBuffer[x * 3 + 1];
                     int r = rowBuffer[x * 3 + 2];
-                    ARGBPixel pixel = PACK_PIXEL(r, g, b);
+                    Color32 pixel = PACK_C32(r, g, b);
                     result->setPixel(x, biHeader.dwHeight - y - 1, pixel);
                     break;
                 }

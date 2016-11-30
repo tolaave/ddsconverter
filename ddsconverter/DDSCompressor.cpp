@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <algorithm>
 #include <array>
+#include <stdlib.h>
 
 #include "DDSFormat.h"
 
@@ -57,7 +58,15 @@ int DDSCompressor::compress(const char *targetfile)
     int y = 0;
     while (y < header.dwHeight)
     {
-        compressBlock(x, y, fp);
+        DDSBlockData block = compressBlock(x, y, fp);
+        
+        if (fwrite(&block, 1, sizeof(block), fp) != sizeof(block))
+        {
+            printf("Could not write block %d,%d to %s\n", x, y, targetfile);
+            fclose(fp);
+            return -3;
+        }
+        
         x += BLOCK_WIDTH;
         if (x >= m_bitmap->getWidth())
         {
@@ -68,15 +77,81 @@ int DDSCompressor::compress(const char *targetfile)
     return 0;
 }
 
-void DDSCompressor::compressBlock(int x, int y, FILE* fp)
+DDSBlockData DDSCompressor::compressBlock(int blockX, int blockY, FILE* fp)
 {
-    std::vector<ARGBPixel> sourceColors(BLOCK_SIZE, 0);
+    std::vector<Color32> sourceColors(BLOCK_SIZE, 0);
     for (int y = 0; y < BLOCK_HEIGHT; y++)
         for (int x = 0; x < BLOCK_WIDTH; x++)
         {
-            sourceColors[y * BLOCK_WIDTH + x] = m_bitmap->getPixel(x, y);
+            sourceColors[y * BLOCK_WIDTH + x] = m_bitmap->getPixel(x + blockX, y + blockY);
         }
     
-    std::array<ARGBPixel, 2> quantizedColors;
+    std::pair<Color32,Color32> quantizedColors;
     m_quantizer.quantize(sourceColors, quantizedColors);
+    
+    std::array<Color32, 4> finalColors =
+    {
+        C32_ROUND16(quantizedColors.first),
+        C32_ROUND16(quantizedColors.second),
+        C32_ROUND16(INTERPOLATE_C32(quantizedColors.first, quantizedColors.second, 2, 1)),
+        C32_ROUND16(INTERPOLATE_C32(quantizedColors.first, quantizedColors.second, 1, 2))
+    };
+
+    DDSBlockData result;
+    
+    Color16 c0 = C32_TO_16(finalColors[0]);
+    Color16 c1 = C32_TO_16(finalColors[1]);
+    if (c0 < c1)
+    {
+        SWAP(finalColors[0], finalColors[1]);
+        SWAP(c0, c1);
+        SWAP(finalColors[2], finalColors[3]);
+    }
+    else if (c0 == c1)
+    {
+        result.wColor0 = c0;
+        result.wColor1 = 0xffff;
+        result.dwData = 0x00000000;
+        return result;
+    }
+    
+    result.dwData = 0;
+    
+    for (int y = 0; y < BLOCK_HEIGHT; y++)
+        for (int x = 0; x < BLOCK_WIDTH; x++)
+        {
+            Color32 srcColor = C32_ROUND16(m_bitmap->getPixel(x + blockX, y + blockY));
+            int bits = chooseClosestIndex(srcColor, finalColors);
+            result.dwData |= ((bits << (x * 2)) << (y * 8));
+        }
+    
+    result.wColor0 = c0;
+    result.wColor1 = c1;
+    
+    return result;
+}
+
+int DDSCompressor::chooseClosestIndex(Color32 color, std::array<Color32, 4>& colors)
+{
+    float minSquaredDistance = (float)UINT32_MAX;
+    int minIndex = 0;
+    
+    int index = 0;
+    for (auto it = colors.begin(); it != colors.end(); it++)
+    {
+        Color32 c = *it;
+        int rDist = (int)GET_R32(c) - (int)GET_R32(color);
+        int gDist = (int)GET_G32(c) - (int)GET_G32(color);
+        int bDist = (int)GET_B32(c) - (int)GET_B32(color);
+        
+        float squaredDistance = (rDist * rDist * LUMINANCE_R) + (gDist * gDist * LUMINANCE_G) + (bDist * bDist * LUMINANCE_B);
+        if (squaredDistance < minSquaredDistance)
+        {
+            minSquaredDistance = squaredDistance;
+            minIndex = index;
+        }
+        index++;
+    }
+    
+    return minIndex;
 }

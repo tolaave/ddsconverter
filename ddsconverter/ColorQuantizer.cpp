@@ -12,19 +12,19 @@ ColorQuantizer::ColorQuantizer()
 {
 }
 
-void ColorQuantizer::quantize(std::vector<ARGBPixel> sourceColors, std::pair<ARGBPixel,ARGBPixel> outputColors)
+void ColorQuantizer::quantize(std::vector<Color32> sourceColors, std::pair<Color32,Color32>& outputColors)
 {
     // Pick the RGB values in source colors with lowest and highest luminance values
     // as starting points for quantization
-    std::array<ARGBPixel, 2> minMaxColors;
+    std::array<Color32, 2> minMaxColors;
     pickMinMaxLuminance(sourceColors, &minMaxColors[0], &minMaxColors[1]);
     
     // Create also interpolated RGB values representing the colors 2 and 3 in the final DDS compression
-    std::array<ARGBPixel, 4> testColors =
+    std::array<Color32, 4> testColors =
     {
         minMaxColors[0],
-        INTERPOLATE_RGB(minMaxColors[0], minMaxColors[1], 1, 2),
-        INTERPOLATE_RGB(minMaxColors[0], minMaxColors[1], 2, 1),
+        INTERPOLATE_C32(minMaxColors[0], minMaxColors[1], 2, 1),
+        INTERPOLATE_C32(minMaxColors[0], minMaxColors[1], 1, 2),
         minMaxColors[1]
     };
     
@@ -33,12 +33,12 @@ void ColorQuantizer::quantize(std::vector<ARGBPixel> sourceColors, std::pair<ARG
     std::array<int, 2> deltaB = {0, 0};
     std::array<int, 2> deltaWeight = {0, 0};
     
-    for (std::vector<ARGBPixel>::iterator it = sourceColors.begin(); it != sourceColors.end(); it++)
+    for (auto it = sourceColors.begin(); it != sourceColors.end(); it++)
     {
-        ARGBPixel pixel = *it;
-        uint8_t r = GET_R(pixel);
-        uint8_t g = GET_G(pixel);
-        uint8_t b = GET_B(pixel);
+        Color32 pixel = *it;
+        int r = (int)GET_R32(pixel);
+        int g = (int)GET_G32(pixel);
+        int b = (int)GET_B32(pixel);
         
         int diffRbest = 0;
         int diffGbest = 0;
@@ -49,14 +49,10 @@ void ColorQuantizer::quantize(std::vector<ARGBPixel> sourceColors, std::pair<ARG
         
         for (int i = 0; i < testColors.size(); i++)
         {
-            ARGBPixel color = testColors[i];
-            uint8_t rt = GET_R(color);
-            uint8_t gt = GET_G(color);
-            uint8_t bt = GET_B(color);
-            
-            int diffR = (int)r - (int)rt;
-            int diffG = (int)g - (int)gt;
-            int diffB = (int)b - (int)bt;
+            Color32 color = testColors[i];
+            int diffR = r - (int)GET_R32(color);
+            int diffG = g - (int)GET_G32(color);
+            int diffB = b - (int)GET_B32(color);
             
             float diffVec = (diffR * diffR) * LUMINANCE_R + (diffG * diffG) * LUMINANCE_G + (diffB * diffB) * LUMINANCE_B;
             if (diffVec < diffVecBest)
@@ -84,33 +80,33 @@ void ColorQuantizer::quantize(std::vector<ARGBPixel> sourceColors, std::pair<ARG
         if (deltaWeight[i] == 0)
             deltaWeight[i] = 1;
         
-        ARGBPixel color = minMaxColors[i];
-        uint8_t r = GET_R(color);
-        uint8_t g = GET_G(color);
-        uint8_t b = GET_B(color);
+        Color32 color = minMaxColors[i];
+        int r = (int)GET_R32(color);
+        int g = (int)GET_G32(color);
+        int b = (int)GET_B32(color);
         
         r = std::min(255, std::max(0, r + deltaR[i] / deltaWeight[i]));
-        g = std::min(255, std::max(0, g + deltaR[i] / deltaWeight[i]));
-        b = std::min(255, std::max(0, b + deltaR[i] / deltaWeight[i]));
+        g = std::min(255, std::max(0, g + deltaG[i] / deltaWeight[i]));
+        b = std::min(255, std::max(0, b + deltaB[i] / deltaWeight[i]));
         
-        minMaxColors[i] = PACK_PIXEL(r, g, b);
+        minMaxColors[i] = PACK_C32(r, g, b);
     }
     
     outputColors.first = minMaxColors[0];
     outputColors.second = minMaxColors[1];
 }
 
-void ColorQuantizer::pickMinMaxLuminance(std::vector<ARGBPixel> colors, ARGBPixel* minRGB, ARGBPixel* maxRGB)
+void ColorQuantizer::pickMinMaxLuminance(std::vector<Color32> colors, Color32* minRGB, Color32* maxRGB)
 {
     float minVecLen = (float)UINT32_MAX;
     float maxVecLen = 0;
     
-    for (std::vector<ARGBPixel>::iterator it = colors.begin(); it != colors.end(); it++)
+    for (auto it = colors.begin(); it != colors.end(); it++)
     {
-        ARGBPixel pixel = *it;
-        uint8_t r = GET_R(pixel);
-        uint8_t g = GET_G(pixel);
-        uint8_t b = GET_B(pixel);
+        Color32 pixel = *it;
+        int r = (int)GET_R32(pixel);
+        int g = (int)GET_G32(pixel);
+        int b = (int)GET_B32(pixel);
         
         float squaredLuminanceVectorLength = r * r * LUMINANCE_R + g * g * LUMINANCE_G + b * b * LUMINANCE_B;
         

@@ -20,10 +20,10 @@ class ColorQuantizer
 public:
             ColorQuantizer      ();
     
-    void    quantize            (std::vector<ARGBPixel> sourceColors, std::pair<ARGBPixel,ARGBPixel> outputColors);
+    void    quantize            (std::vector<Color32> sourceColors, std::pair<Color32,Color32>& outputColors);
     
 private:
-    void    pickMinMaxLuminance (std::vector<ARGBPixel> colors, ARGBPixel* minRGB, ARGBPixel* maxRGB);
+    void    pickMinMaxLuminance (std::vector<Color32> colors, Color32* minRGB, Color32* maxRGB);
 
 };
 
