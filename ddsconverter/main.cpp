@@ -28,16 +28,21 @@ int main(int argc, const char * argv[])
     
     if (strncmp(argv[1], "-c", 2) == 0)
     {
-        Bitmap* image = NULL;
-        
-        DDSCompressor compressor(image);
-        compressor.compress(argv[3]);
+        Bitmap* image = Bitmap::load(argv[2]);
+        if (image != nullptr)
+        {
+            DDSCompressor compressor(image);
+            compressor.compress(argv[3]);
+        }
     }
     else if (strncmp(argv[1], "-e", 2) == 0)
     {
         DDSDecompressor decompressor(argv[2]);
         Bitmap* image = decompressor.decompress();
-        
+        if (image != nullptr)
+        {
+            Bitmap::save(image, argv[3]);
+        }
     }
     
     return 0;

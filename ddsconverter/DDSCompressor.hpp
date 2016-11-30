@@ -9,15 +9,21 @@
 #ifndef DDSCompressor_hpp
 #define DDSCompressor_hpp
 
+#include "ColorQuantizer.hpp"
 #include "Bitmap.hpp"
 
 class DDSCompressor
 {
 public:
-            DDSCompressor   (Bitmap* bitmap);
-    int     compress        (const char* targetfile);
+                    DDSCompressor   (Bitmap* bitmap);
+    int             compress        (const char* targetfile);
     
 private:
+    
+    void            compressBlock   (int x, int y, FILE* fp);
+    
+    Bitmap*         m_bitmap;
+    ColorQuantizer  m_quantizer;
     
 };
 
