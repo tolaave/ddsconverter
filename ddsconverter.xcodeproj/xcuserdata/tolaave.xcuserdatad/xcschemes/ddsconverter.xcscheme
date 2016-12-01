@@ -64,7 +64,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-c /Volumes/Seagate/Omat/workspace/DDSConverter/work/png/programming_assignment_ref_images/Colors.bmp output/test.dds"
+            argument = "-c /Volumes/Seagate/Omat/workspace/DDSConverter/work/png/programming_assignment_ref_images/checkers.bmp output/test.dds"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

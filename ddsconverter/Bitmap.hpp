@@ -31,11 +31,10 @@ typedef uint16_t            Color16;
 #define GET_G16(rgb)        (((rgb >> 5) & 0x3f) << 2)
 #define GET_B16(rgb)        (((rgb) & 0x1f) << 3)
 
-#define INTERPOLATE_C32(rgb1,rgb2,w1,w2)    ((Color32)(                                     \
-                            (((((rgb1) & 0xff00ff) * (w1)) / ((w1) + (w2))                  \
-                            + (((rgb2) & 0xff00ff) * (w2)) / ((w1) + (w2))) & 0xff00ff) |   \
-                            (((((rgb1) & 0x00ff00) * (w1)) / ((w1) + (w2))                  \
-                            + (((rgb2) & 0x00ff00) * (w2)) / ((w1) + (w2))) & 0x00ff00)))
+#define INTERPOLATE_C32(rgb1,rgb2,w1,w2)    ((Color32)( \
+                            (((((((rgb1 >> 16) & 0xff) * (w1)) + (((rgb2 >> 16) & 0xff) * (w2))) / ((w1) + (w2))) & 0xff) << 16) | \
+                            (((((((rgb1 >> 8) & 0xff) * (w1)) + (((rgb2 >> 8) & 0xff) * (w2))) / ((w1) + (w2))) & 0xff) << 8) | \
+                            ((((((rgb1) & 0xff) * (w1)) + (((rgb2) & 0xff) * (w2))) / ((w1) + (w2))) & 0xff)))
 
 // Source for channel-specific luminance weights: https://en.wikipedia.org/wiki/Relative_luminance
 #define LUMINANCE_R         0.2126f

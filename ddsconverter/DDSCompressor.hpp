@@ -23,7 +23,7 @@ public:
     
 private:
     
-    DDSBlockData    compressBlock       (int x, int y, FILE* fp);
+    DDSBlockData    compressBlock       (int x, int y);
     int             chooseClosestIndex  (Color32 color, std::array<Color32, 4>& colors);
     
     Bitmap*         m_bitmap;

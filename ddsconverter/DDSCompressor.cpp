@@ -42,7 +42,7 @@ int DDSCompressor::compress(const char *targetfile)
     ::memset(header.dwReserved, 0, sizeof(header.dwReserved));
     header.ddspf.dwSize = 32;
     header.ddspf.dwFlags = DDPF_FOURCC;
-    header.ddspf.dwFourCC = 0x31545844;
+    header.ddspf.dwFourCC = 0x31545844; //'DXT1'
     header.ddspf.dwRGBBitCount = 0;
     header.ddspf.dwRBitMask = header.ddspf.dwGBitMask = header.ddspf.dwBBitMask = header.ddspf.dwABitMask = 0;
     header.dwCaps = header.dwCaps2 = header.dwCaps3 = header.dwCaps4 = header.dwReserved2 = 0;
@@ -56,9 +56,9 @@ int DDSCompressor::compress(const char *targetfile)
     
     int x = 0;
     int y = 0;
-    while (y < header.dwHeight)
+    while (y < m_bitmap->getHeight())
     {
-        DDSBlockData block = compressBlock(x, y, fp);
+        DDSBlockData block = compressBlock(x, y);
         
         if (fwrite(&block, 1, sizeof(block), fp) != sizeof(block))
         {
@@ -77,7 +77,7 @@ int DDSCompressor::compress(const char *targetfile)
     return 0;
 }
 
-DDSBlockData DDSCompressor::compressBlock(int blockX, int blockY, FILE* fp)
+DDSBlockData DDSCompressor::compressBlock(int blockX, int blockY)
 {
     std::vector<Color32> sourceColors(BLOCK_SIZE, 0);
     for (int y = 0; y < BLOCK_HEIGHT; y++)
@@ -91,10 +91,10 @@ DDSBlockData DDSCompressor::compressBlock(int blockX, int blockY, FILE* fp)
     
     std::array<Color32, 4> finalColors =
     {
-        C32_ROUND16(quantizedColors.first),
-        C32_ROUND16(quantizedColors.second),
-        C32_ROUND16(INTERPOLATE_C32(quantizedColors.first, quantizedColors.second, 2, 1)),
-        C32_ROUND16(INTERPOLATE_C32(quantizedColors.first, quantizedColors.second, 1, 2))
+        quantizedColors.first,
+        quantizedColors.second,
+        INTERPOLATE_C32(quantizedColors.first, quantizedColors.second, 2, 1),
+        INTERPOLATE_C32(quantizedColors.first, quantizedColors.second, 1, 2)
     };
 
     DDSBlockData result;
@@ -120,7 +120,7 @@ DDSBlockData DDSCompressor::compressBlock(int blockX, int blockY, FILE* fp)
     for (int y = 0; y < BLOCK_HEIGHT; y++)
         for (int x = 0; x < BLOCK_WIDTH; x++)
         {
-            Color32 srcColor = C32_ROUND16(m_bitmap->getPixel(x + blockX, y + blockY));
+            Color32 srcColor = m_bitmap->getPixel(x + blockX, y + blockY);
             int bits = chooseClosestIndex(srcColor, finalColors);
             result.dwData |= ((bits << (x * 2)) << (y * 8));
         }
