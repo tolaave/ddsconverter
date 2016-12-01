@@ -78,7 +78,7 @@ void ColorQuantizer::quantize(std::vector<Color32> sourceColors, std::pair<Color
     for (int i = 0; i < 2; i++)
     {
         if (deltaWeight[i] == 0)
-            deltaWeight[i] = 1;
+            continue;
         
         Color32 color = minMaxColors[i];
         int r = (int)GET_R32(color);
